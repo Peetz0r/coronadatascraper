@@ -1,6 +1,7 @@
 import parseCsvSync from 'csv-parse/lib/sync';
 import * as fetch from '../../lib/fetch/index.js';
 import * as parse from '../../lib/parse.js';
+import * as transform from '../../lib/transform.js';
 import maintainers from '../../lib/maintainers.js';
 
 const scraper = {
@@ -13,6 +14,12 @@ const scraper = {
       name: 'RIVM',
       url: 'https://www.rivm.nl/coronavirus-kaart-van-nederland-per-gemeente',
       description: 'RIVM: Coronavirus kaart van Nederland per gemeente'
+    },
+    {
+      name: 'CBS',
+      url:
+        'http://nationaalgeoregister.nl/geonetwork/srv/dut/catalog.search#/metadata/effe1ab0-073d-437c-af13-df5c5e07d6cd',
+      description: 'CBS gebiedsindelingen: gemeentegrenzen'
     }
   ],
   async scraper() {
@@ -332,6 +339,7 @@ const scraper = {
         642
       ]
     };
+
     const input = parseCsvSync(
       $('#csvData')
         .text()
@@ -343,32 +351,38 @@ const scraper = {
       }
     );
 
-    const output = [];
+    const m = input.find(e => parse.number(e.Gemnr) === -1);
+
+    let output = [
+      {
+        state: '(unassigned)',
+        cases: parse.number(m.Gemeente.match(/(\d+)/)[0])
+      }
+    ];
 
     for (const province in provincesMunicipailties) {
       if (Object.prototype.hasOwnProperty.call(provincesMunicipailties, province)) {
-        console.log(`- ${province}...`);
-
-        let cases = 0;
-        let population = 0;
+        const municipalities = [];
 
         for (const municipality of provincesMunicipailties[province]) {
-          const m = input.find(e => e.Gemnr === municipality);
-          cases += parse.number(m.Aantal);
-          population += parse.number(m.BevAant);
-          console.log(`   - ${m.Gemeente}: ${m.Aantal}`);
+          const m = input.find(e => parse.number(e.Gemnr) === municipality);
+          municipalities.push({
+            city: m.Gemeente,
+            cases: parse.number(m.Aantal),
+            state: province,
+            population: parse.number(m.BevAant)
+          });
         }
-        console.log(
-          `- ${province}: ${cases} / ${population} which is ${Math.round((cases / population) * 1e5)} per 100.000`
-        );
 
-        output.push({
-          state: province,
-          cases,
-          population
-        });
+        output = output.concat(municipalities);
+        output.push(
+          transform.sumData(municipalities, {
+            state: province
+          })
+        );
       }
     }
+    console.log(output);
     return output;
   }
 };
