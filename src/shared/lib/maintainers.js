@@ -48,6 +48,14 @@ const maintainers = {
     name: 'Quentin Golsteyn',
     github: 'qgolsteyn',
     flag: '🇨🇦'
+  },
+  peetz0r: {
+    name: 'Peetz0r',
+    email: 'coronadatascraper@haas-en-berg.nl',
+    twitter: 'Peetz0r',
+    github: 'Peetz0r',
+    country: 'NED',
+    flag: '🇳🇱'
   }
 };
 
