@@ -9,13 +9,13 @@ import municipailtiesGeojson from '../../vendor/nld-municipalities.json';
 const scraper = {
   country: 'NLD',
   maintainers: [maintainers.peetz0r],
-  url: 'https://www.rivm.nl/coronavirus-kaart-van-nederland-per-gemeente',
+  url: 'https://www.rivm.nl/actuele-informatie-over-coronavirus',
   type: 'csv',
   sources: [
     {
       name: 'RIVM',
-      url: 'https://www.rivm.nl/coronavirus-kaart-van-nederland-per-gemeente',
-      description: 'RIVM: Coronavirus kaart van Nederland per gemeente'
+      url: 'https://www.rivm.nl/actuele-informatie-over-coronavirus#mapContainer',
+      description: 'RIVM: In het ziekenhuis opgenomen COVID-19 patiënten'
     },
     {
       name: 'CBS',
@@ -38,14 +38,7 @@ const scraper = {
       }
     );
 
-    const m = input.find(e => parse.number(e.Gemnr) === -1);
-
-    let output = [
-      {
-        state: '(unassigned)',
-        cases: parse.number(m.Gemeente.match(/(\d+)/)[0])
-      }
-    ];
+    let output = [];
 
     for (const province in provincesMunicipailties) {
       if (Object.prototype.hasOwnProperty.call(provincesMunicipailties, province)) {
@@ -55,7 +48,7 @@ const scraper = {
           const m = input.find(e => parse.number(e.Gemnr) === municipality);
           municipalities.push({
             city: m.Gemeente,
-            cases: parse.number(m.Aantal),
+            hospitalized: parse.number(m.Aantal),
             state: province,
             population: parse.number(m.BevAant),
             feature: municipailtiesGeojson.features.find(
