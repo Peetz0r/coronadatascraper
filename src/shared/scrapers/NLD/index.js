@@ -63,12 +63,12 @@ const scraper = {
         output = output.concat(municipalities);
         output.push(
           transform.sumData(municipalities, {
-            state: province
+            state: province,
+            aggregate: 'city'
           })
         );
       }
     }
-    console.log(output);
     return output;
   }
 };
