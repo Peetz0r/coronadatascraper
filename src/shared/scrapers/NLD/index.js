@@ -4,6 +4,7 @@ import * as parse from '../../lib/parse.js';
 import * as transform from '../../lib/transform.js';
 import maintainers from '../../lib/maintainers.js';
 import provincesMunicipailties from '../../vendor/nld-provinces.json';
+import municipailtiesGeojson from '../../vendor/nld-municipalities.json';
 
 const scraper = {
   country: 'NLD',
@@ -56,7 +57,10 @@ const scraper = {
             city: m.Gemeente,
             cases: parse.number(m.Aantal),
             state: province,
-            population: parse.number(m.BevAant)
+            population: parse.number(m.BevAant),
+            feature: municipailtiesGeojson.features.find(
+              e => e.properties.statcode === `GM${String(municipality).padStart(4, '0')}`
+            )
           });
         }
 
