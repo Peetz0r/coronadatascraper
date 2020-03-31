@@ -54,7 +54,7 @@ const maintainers = {
     email: 'coronadatascraper@haas-en-berg.nl',
     twitter: 'Peetz0r',
     github: 'Peetz0r',
-    country: 'NED',
+    country: 'NLD',
     flag: '🇳🇱'
   }
 };
